@@ -11,16 +11,18 @@ public class Ant {
     private Integer routeLength = 0;
 
     public void run() {
-        while (visited.size() != Main.CITIES_COUNT){
+        while (visited.size() != Main.CITIES_COUNT) {
             int d = getDestinationIndex();
             if (d == -1) {
                 System.out.println("Incorrect index");
             }
             route.add(d);
             visited.add(d);
-            routeLength += Main.cityGraph.get(currentCityIndex).get(d);
+            routeLength += Main.cityGraph[currentCityIndex][d];
             currentCityIndex = d;
         }
+        route.add(route.getFirst());
+        routeLength += Main.cityGraph[currentCityIndex][route.getFirst()];
     }
 
     public boolean isElite() {
@@ -34,6 +36,7 @@ public class Ant {
     public void setCurrentCityIndex(int currentCityIndex) {
         this.currentCityIndex = currentCityIndex;
         route.add(currentCityIndex);
+        visited.add(currentCityIndex);
     }
 
     public Integer getRouteLength() {

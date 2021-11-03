@@ -7,32 +7,32 @@ public class Main {
     public final static int MAX_VALUE = 150;
     public final static int CITIES_COUNT = 300;
     public static double LMin = MAX_VALUE * CITIES_COUNT;
-    public final static int ANT_NUMBER = 1000;
+    public final static int ANT_NUMBER = 500;
     public static ArrayList<Ant> antsColony;
     public static int tMax = 100;
-    public final static int ALFA = 1;
+    public final static int ALFA = 3;
     public final static int BETA = 1;
-    public final static double RO = 0.1;
+    public final static double RO = 0.4;
     public final static double TAU_0 = 0.01;
-    public static ArrayList<ArrayList<Integer>> cityGraph;
+    public static int[][] cityGraph;
     public static ArrayList<ArrayList<Double>> sightMatrix;
     public static ArrayList<ArrayList<Double>> pheromoneMatrix;
 
     public static void generateGraph() {
-        ArrayList<ArrayList<Integer>> graphRow = new ArrayList<>();
-        ArrayList<Integer> graphCol;
+        int[][] mat = new int[CITIES_COUNT][CITIES_COUNT];
         for (int i = 0; i < CITIES_COUNT; i++) {
-            graphCol = new ArrayList<>();
-            graphRow.add(graphCol);
             for (int j = 0; j < CITIES_COUNT; j++) {
                 if (i == j) {
-                    graphCol.add(0);
+                    mat[i][j] = 0;
                 } else {
-                    graphCol.add((int) (Math.random() * (Main.MAX_VALUE - Main.MIN_VALUE) + Main.MIN_VALUE));
+
+                    int x = (int) (Math.random() * (Main.MAX_VALUE - Main.MIN_VALUE) + Main.MIN_VALUE);
+                    mat[i][j] = x;
+                    mat[j][i] = x;
                 }
             }
+            cityGraph = mat;
         }
-        cityGraph = graphRow;
     }
 
     public static void initSightMatrix() {
@@ -45,7 +45,7 @@ public class Main {
                 if (i == j) {
                     matrixCol.add(0.0);
                 } else {
-                    matrixCol.add(1.0 / cityGraph.get(i).get(j));
+                    matrixCol.add(1.0 / cityGraph[i][j]);
                 }
             }
         }
@@ -74,7 +74,7 @@ public class Main {
         Ant ant;
         int cityIndex = 0;
         for (int i = 0; i < ANT_NUMBER; i++) {
-            if (cityIndex > CITIES_COUNT) {
+            if (cityIndex >= CITIES_COUNT) {
                 cityIndex = 0;
             }
             ant = new Ant();
@@ -84,13 +84,21 @@ public class Main {
         }
     }
 
+    private static void elitePheromoneUpdate() {
+
+    }
+
     public static void updatePheromone() {
         double deltaTau;
         int origin;
         int destination;
         for (Ant ant : antsColony) {
             deltaTau = Main.LMin / ant.getRouteLength();
-            LinkedList<Integer> route = ant.getRoute();
+            if (ant.isElite()) {
+                deltaTau *= 2;
+            }
+
+            LinkedList<Integer> route = (LinkedList<Integer>) ant.getRoute().clone();
             origin = route.pollFirst();
             for (Integer city : route) {
                 destination = city;
@@ -110,26 +118,53 @@ public class Main {
         }
     }
 
+    public static void printGraph() {
+        for (int i = 0; i < CITIES_COUNT; i++) {
+            for (int j = 0; j < CITIES_COUNT; j++) {
+                System.out.print(" " + cityGraph[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
+    public static void printRoute(LinkedList<Integer> bestRoute, int bestRouteLength) {
+        for (Integer index : bestRoute) {
+            System.out.print(" " + index);
+        }
+        System.out.println();
+        System.out.println("Route length = " + bestRouteLength);
+    }
+
     public static void main(String[] args) {
         System.out.println("lab 4");
         Main.generateGraph();
         Main.initSightMatrix();
         Main.initPheromoneMatrix();
-        Main.initAntsColony();
+
         int bestRouteLength = Integer.MAX_VALUE;
-        LinkedList<Integer> bestRoute;
-        for (Ant ant : antsColony) {
-            ant.run();
-            if (ant.getRouteLength() < bestRouteLength) {
-                bestRoute = ant.getRoute();
-                bestRouteLength = ant.getRouteLength();
-                Main.LMin = bestRouteLength;
+        LinkedList<Integer> bestRoute = new LinkedList<>();
+
+        for (int t = 0; t < tMax; t++) {
+            Main.initAntsColony();
+            for (Ant ant : antsColony) {
+                ant.run();
+                if (ant.getRouteLength() < bestRouteLength) {
+                    bestRoute = ant.getRoute();
+                    bestRouteLength = ant.getRouteLength();
+                    Main.LMin = bestRouteLength;
+                }
             }
+            Main.evaporatePheromone();
+            Main.updatePheromone();
+
+            // TODO: add elite system
+            //antsColony.sort();
+            // get top 10 ? elite ants
+            // update ant.elite
+            System.out.println("Best route in " + t + " iteration");
+            Main.printRoute(bestRoute, bestRouteLength);
         }
-        Main.evaporatePheromone();
-        Main.updatePheromone();
-
-
-        int k = 1;
+        // Main.printGraph();
+        //Main.printRoute(bestRoute, bestRouteLength);
     }
 }
