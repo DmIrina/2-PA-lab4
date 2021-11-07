@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 public class Main {
@@ -11,9 +12,9 @@ public class Main {
     public static ArrayList<Ant> antsColony;
     public static int tMax = 100;
     public final static int ALFA = 3;
-    public final static int BETA = 1;
+    public final static int BETA = 3;
     public final static double RO = 0.4;
-    public final static double TAU_0 = 0.01;
+    public final static double TAU_0 = 0.2;
     public static int[][] cityGraph;
     public static ArrayList<ArrayList<Double>> sightMatrix;
     public static ArrayList<ArrayList<Double>> pheromoneMatrix;
@@ -25,7 +26,6 @@ public class Main {
                 if (i == j) {
                     mat[i][j] = 0;
                 } else {
-
                     int x = (int) (Math.random() * (Main.MAX_VALUE - Main.MIN_VALUE) + Main.MIN_VALUE);
                     mat[i][j] = x;
                     mat[j][i] = x;
@@ -84,8 +84,12 @@ public class Main {
         }
     }
 
-    private static void elitePheromoneUpdate() {
-
+    private static void findEliteAnts() {
+        Comparator<Ant> comparator = Comparator.comparing(Ant::getRouteLength);
+        antsColony.sort(comparator);
+        for (int i = 0; i < 10; i++){
+            antsColony.get(i).elite();
+        }
     }
 
     public static void updatePheromone() {
@@ -155,10 +159,12 @@ public class Main {
                 }
             }
             Main.evaporatePheromone();
+            Main.findEliteAnts();
             Main.updatePheromone();
 
+
             // TODO: add elite system
-            //antsColony.sort();
+            // antsColony.sort();
             // get top 10 ? elite ants
             // update ant.elite
             System.out.println("Best route in " + t + " iteration");

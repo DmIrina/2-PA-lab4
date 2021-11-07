@@ -29,6 +29,10 @@ public class Ant {
         return elite;
     }
 
+    public void elite(){
+        this.elite = true;
+    }
+
     public int getCurrentCityIndex() {
         return currentCityIndex;
     }
