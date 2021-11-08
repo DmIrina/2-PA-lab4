@@ -7,17 +7,18 @@ public class Main {
     public final static int MIN_VALUE = 5;
     public final static int MAX_VALUE = 150;
     public final static int CITIES_COUNT = 300;
-    public static double LMin = MAX_VALUE * CITIES_COUNT;
-    public final static int ANT_NUMBER = 500;
-    public static ArrayList<Ant> antsColony;
+    public static int ANT_NUMBER = 300;
+    public static int ELITE_ANT_NUMBER = 10;
     public static int tMax = 100;
-    public final static int ALFA = 3;
-    public final static int BETA = 3;
-    public final static double RO = 0.4;
-    public final static double TAU_0 = 0.2;
+    public static int ALFA = 0;
+    public static int BETA = 2;
+    public static double RO = 0.3;
+    public final static double TAU_0 = 0.1;
+    public static double LMin = MAX_VALUE * CITIES_COUNT;
     public static int[][] cityGraph;
     public static ArrayList<ArrayList<Double>> sightMatrix;
     public static ArrayList<ArrayList<Double>> pheromoneMatrix;
+    public static ArrayList<Ant> antsColony;
 
     public static void generateGraph() {
         int[][] mat = new int[CITIES_COUNT][CITIES_COUNT];
@@ -87,7 +88,7 @@ public class Main {
     private static void findEliteAnts() {
         Comparator<Ant> comparator = Comparator.comparing(Ant::getRouteLength);
         antsColony.sort(comparator);
-        for (int i = 0; i < 10; i++){
+        for (int i = 0; i < ELITE_ANT_NUMBER; i++) {
             antsColony.get(i).elite();
         }
     }
@@ -162,15 +163,18 @@ public class Main {
             Main.findEliteAnts();
             Main.updatePheromone();
 
-
-            // TODO: add elite system
-            // antsColony.sort();
-            // get top 10 ? elite ants
-            // update ant.elite
-            System.out.println("Best route in " + t + " iteration");
-            Main.printRoute(bestRoute, bestRouteLength);
+            // System.out.println("Best route in " + t + " iteration");
+            // Main.printRoute(bestRoute, bestRouteLength);
         }
         // Main.printGraph();
         //Main.printRoute(bestRoute, bestRouteLength);
+
+        for (int i = 0; i < 40; i++) {
+            System.out.println(ALFA + ", " + BETA + ", " + RO + ", " + LMin + ", " + ANT_NUMBER + ", " + ELITE_ANT_NUMBER);
+            ALFA += 0.5;
+        }
+        System.out.println(bestRouteLength);
     }
+
+
 }
