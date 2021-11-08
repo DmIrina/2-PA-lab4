@@ -7,12 +7,12 @@ public class Main {
     public final static int MIN_VALUE = 5;
     public final static int MAX_VALUE = 150;
     public final static int CITIES_COUNT = 300;
-    public static int ANT_NUMBER = 300;
+    public static int ANT_NUMBER = 800;
     public static int ELITE_ANT_NUMBER = 10;
     public static int tMax = 100;
-    public static int ALFA = 0;
-    public static int BETA = 2;
-    public static double RO = 0.3;
+    public static double ALFA = 2.0;
+    public static double BETA = 2.0;
+    public static double RO = 0.425;
     public final static double TAU_0 = 0.1;
     public static double LMin = MAX_VALUE * CITIES_COUNT;
     public static int[][] cityGraph;
@@ -143,37 +143,34 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("lab 4");
         Main.generateGraph();
-        Main.initSightMatrix();
-        Main.initPheromoneMatrix();
 
-        int bestRouteLength = Integer.MAX_VALUE;
-        LinkedList<Integer> bestRoute = new LinkedList<>();
+        for (int i = 0; i < 41; i++) {
 
-        for (int t = 0; t < tMax; t++) {
-            Main.initAntsColony();
-            for (Ant ant : antsColony) {
-                ant.run();
-                if (ant.getRouteLength() < bestRouteLength) {
-                    bestRoute = ant.getRoute();
-                    bestRouteLength = ant.getRouteLength();
-                    Main.LMin = bestRouteLength;
+            Main.initSightMatrix();
+            Main.initPheromoneMatrix();
+            int bestRouteLength = Integer.MAX_VALUE;
+            LinkedList<Integer> bestRoute = new LinkedList<>();
+            for (int t = 0; t < tMax; t++) {
+                Main.initAntsColony();
+                for (Ant ant : antsColony) {
+                    ant.run();
+                    if (ant.getRouteLength() < bestRouteLength) {
+                        bestRoute = ant.getRoute();
+                        bestRouteLength = ant.getRouteLength();
+                        Main.LMin = bestRouteLength;
+                    }
                 }
+                Main.evaporatePheromone();
+                Main.findEliteAnts();
+                Main.updatePheromone();
+
+                // System.out.println("Best route in " + t + " iteration");
+                // Main.printRoute(bestRoute, bestRouteLength);
             }
-            Main.evaporatePheromone();
-            Main.findEliteAnts();
-            Main.updatePheromone();
 
-            // System.out.println("Best route in " + t + " iteration");
-            // Main.printRoute(bestRoute, bestRouteLength);
+            System.out.println(ALFA + ", " + BETA + ", " + RO + ", " + ANT_NUMBER + ", " + ELITE_ANT_NUMBER + ", " + bestRouteLength);
+            ELITE_ANT_NUMBER += 1;
         }
-        // Main.printGraph();
-        //Main.printRoute(bestRoute, bestRouteLength);
-
-        for (int i = 0; i < 40; i++) {
-            System.out.println(ALFA + ", " + BETA + ", " + RO + ", " + LMin + ", " + ANT_NUMBER + ", " + ELITE_ANT_NUMBER);
-            ALFA += 0.5;
-        }
-        System.out.println(bestRouteLength);
     }
 
 
