@@ -33,10 +33,6 @@ public class Ant {
         this.elite = true;
     }
 
-    public int getCurrentCityIndex() {
-        return currentCityIndex;
-    }
-
     public void setCurrentCityIndex(int currentCityIndex) {
         this.currentCityIndex = currentCityIndex;
         route.add(currentCityIndex);

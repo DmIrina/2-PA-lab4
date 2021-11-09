@@ -85,6 +85,17 @@ public class Main {
         }
     }
 
+    public static void initAntsColonyInOneCity() {
+        antsColony = new ArrayList<>();
+        Ant ant;
+        int cityIndex = (int) (Math.random() * Main.CITIES_COUNT);
+        for (int i = 0; i < ANT_NUMBER; i++) {
+            ant = new Ant();
+            ant.setCurrentCityIndex(cityIndex);
+            antsColony.add(ant);
+        }
+    }
+
     private static void findEliteAnts() {
         Comparator<Ant> comparator = Comparator.comparing(Ant::getRouteLength);
         antsColony.sort(comparator);
@@ -144,33 +155,37 @@ public class Main {
         System.out.println("lab 4");
         Main.generateGraph();
 
-        for (int i = 0; i < 41; i++) {
+        // тестування по параметрам
+        //for (int i = 0; i < 41; i++) {
 
-            Main.initSightMatrix();
-            Main.initPheromoneMatrix();
-            int bestRouteLength = Integer.MAX_VALUE;
-            LinkedList<Integer> bestRoute = new LinkedList<>();
-            for (int t = 0; t < tMax; t++) {
-                Main.initAntsColony();
-                for (Ant ant : antsColony) {
-                    ant.run();
-                    if (ant.getRouteLength() < bestRouteLength) {
-                        bestRoute = ant.getRoute();
-                        bestRouteLength = ant.getRouteLength();
-                        Main.LMin = bestRouteLength;
-                    }
+        Main.initSightMatrix();
+        Main.initPheromoneMatrix();
+        int bestRouteLength = Integer.MAX_VALUE;
+        LinkedList<Integer> bestRoute = new LinkedList<>();
+        for (int t = 0; t < tMax; t++) {
+            Main.initAntsColony();
+            for (Ant ant : antsColony) {
+                ant.run();
+                if (ant.getRouteLength() < bestRouteLength) {
+                    bestRoute = ant.getRoute();
+                    bestRouteLength = ant.getRouteLength();
+                    Main.LMin = bestRouteLength;
                 }
-                Main.evaporatePheromone();
-                Main.findEliteAnts();
-                Main.updatePheromone();
-
-                // System.out.println("Best route in " + t + " iteration");
-                // Main.printRoute(bestRoute, bestRouteLength);
             }
+            Main.evaporatePheromone();
+            Main.findEliteAnts();
+            Main.updatePheromone();
 
-            System.out.println(ALFA + ", " + BETA + ", " + RO + ", " + ANT_NUMBER + ", " + ELITE_ANT_NUMBER + ", " + bestRouteLength);
-            ELITE_ANT_NUMBER += 1;
+            // вивід шляху по ітераціям
+            // System.out.println("Best route in " + t + " iteration");
+            // Main.printRoute(bestRoute, bestRouteLength);
+            System.out.println(t + ", " + bestRouteLength);
         }
+
+        // тестування по параметрам
+        // System.out.println(ALFA + ", " + BETA + ", " + RO + ", " + ANT_NUMBER + ", " + ELITE_ANT_NUMBER + ", " + bestRouteLength);
+        // ELITE_ANT_NUMBER += 1;
+        //}
     }
 
 
